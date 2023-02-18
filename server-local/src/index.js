@@ -67,9 +67,9 @@ wsClient.on("message", (data) => {
         })
     }
 
-    const config = {
+    config = {
         ...config,
-        object
+        ...object
     }
 
     console.log(config)

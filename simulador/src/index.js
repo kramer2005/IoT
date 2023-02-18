@@ -11,7 +11,9 @@ wsClient.on("open", () => {
 
 const setup = () => {
     wsClient.on("message", (data) => {
-        console.log(JSON.parse(data.toString()))
+        const msg = data.toString()
+        const splitted = msg.split(" ")
+        console.log(`Command ${splitted[0]} = ${splitted[1]} received`)
     })
 
     wsClient.on("close", () => {
