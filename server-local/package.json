@@ -1,0 +1,15 @@
+{
+  "name": "server-local",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.33.1",
+    "@influxdata/influxdb-client-apis": "^1.33.1",
+    "ws": "^8.12.1"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.4"
+  }
+}
