@@ -9,10 +9,48 @@ const app = Express()
  */
 let connections = []
 
-app.get("/", (req, res) => {
+app.get("/lights-on", (req, res) => {
     const data = {
-        lights: true,
-        speed: 0
+        lights: true
+    }
+
+    const message = JSON.stringify(data)
+
+    connections.forEach(conn => conn.send(message))
+    console.log("Message broadcasted")
+
+    res.sendStatus(200)
+})
+
+app.get("/lights-off", (req, res) => {
+    const data = {
+        lights: false
+    }
+
+    const message = JSON.stringify(data)
+
+    connections.forEach(conn => conn.send(message))
+    console.log("Message broadcasted")
+
+    res.sendStatus(200)
+})
+
+app.get("/first-floor", (req, res) => {
+    const data = {
+        floor: 1
+    }
+
+    const message = JSON.stringify(data)
+
+    connections.forEach(conn => conn.send(message))
+    console.log("Message broadcasted")
+
+    res.sendStatus(200)
+})
+
+app.get("/second-floor", (req, res) => {
+    const data = {
+        floor: 2
     }
 
     const message = JSON.stringify(data)

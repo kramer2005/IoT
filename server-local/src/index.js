@@ -10,7 +10,7 @@ const token = "3tkckHlALSaKexCphY5mSSnEXPak5w7ktedaLUmJwbDK09VhH2cou6mQRPvyC6iyQ
 const org = "KramerDev"
 const bucket = "IoT"
 
-const wsClient = new WebSocket("ws://localhost:8999")
+const wsClient = new WebSocket("ws://3.94.183.225:8999")
 const writeApi = new InfluxDB({ url, token }).getWriteApi(org, bucket, 'ns')
 
 /**
