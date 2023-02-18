@@ -33,7 +33,7 @@ wsServer.on("connection", (conn) => {
 
             writeApi.writePoint(p)
             writeApi.flush()
-            console.log(data.temp)
+            console.log(p.toString())
         }
     })
 
@@ -47,10 +47,30 @@ wsServer.on("listening", () => {
     console.log("Server started")
 })
 
-wsClient.on("message", (data) => {
-    connections.forEach(conn => {
-        conn.send(data)
-    })
+let config = {
+    lights: false,
+    floor: 1
+}
 
-    console.log("Message broadcasted")
+wsClient.on("message", (data) => {
+    const object = JSON.parse(data)
+
+    if("lights" in object) {
+        connections.forEach(conn => {
+            conn.send(`lights ${object.lights ? "1" : "0"}`)
+        })
+    }
+
+    if("floor" in object) {
+        connections.forEach(conn => {
+            conn.send(`floor ${object.floor}`)
+        })
+    }
+
+    const config = {
+        ...config,
+        object
+    }
+
+    console.log(config)
 })
