@@ -18,6 +18,10 @@ serialPort.on("open", () => {
 });
 
 parser.on('data', (data) => {
+    if (!(data.startsWith("light") || data.startsWith("temperature"))) {
+        return
+    }
+
     const splitted = data.split(" ");
 
     const p = new Point("Arduino")
@@ -47,7 +51,7 @@ wsClient.on("message", (data) => {
     }
 
     if ("floor" in object) {
-        serialPort.write(`floor ${object.floor}`);
+        serialPort.write(`floor ${object.floor - 1}`);
     }
 
     config = {
