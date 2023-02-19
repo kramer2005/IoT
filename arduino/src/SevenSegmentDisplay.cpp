@@ -25,7 +25,7 @@ void SevenSegmentDisplay::display(size_t number)
         digitalWrite(this->pins[i], sevenSegmtDisplay[number][i]);
 }
 
-void SevenSegmentDisplay::reset()
+void SevenSegmentDisplay::empty()
 {
     for (size_t i = 0; i < 7; i++)
         digitalWrite(this->pins[i], sevenSegmtDisplay[10][i]);

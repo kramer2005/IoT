@@ -7,7 +7,7 @@ class SevenSegmentDisplay
 public:
     SevenSegmentDisplay(uint8_t pins[7]);
     void display(size_t number);
-    void reset();
+    void empty();
 
 private:
     uint8_t *pins;

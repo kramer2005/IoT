@@ -56,7 +56,10 @@ void loop()
 
     if (command.startsWith("floor"))
     {
-      liftController.goToFloor(command.charAt(6) - '0');
+      int floor = command.charAt(6) - '0';
+      display.empty();
+      liftController.goToFloor(floor);
+      display.display(floor + 1);
     }
   }
 }
