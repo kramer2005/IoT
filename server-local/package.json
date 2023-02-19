@@ -7,6 +7,8 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.33.1",
     "@influxdata/influxdb-client-apis": "^1.33.1",
+    "@serialport/parser-readline": "^10.5.0",
+    "serialport": "^10.5.0",
     "ws": "^8.12.1"
   },
   "devDependencies": {

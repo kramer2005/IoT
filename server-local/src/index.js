@@ -1,70 +1,53 @@
-import { WebSocketServer, WebSocket } from 'ws'
+import { WebSocket } from 'ws'
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
+import { ReadlineParser, SerialPort } from 'serialport'
 
-const wsServer = new WebSocketServer({
-    port: 4000
-})
-
-const url = "http://localhost:8086"
-const token = "3tkckHlALSaKexCphY5mSSnEXPak5w7ktedaLUmJwbDK09VhH2cou6mQRPvyC6iyQiRCz93NtxwIuBGvdCZLng=="
-const org = "KramerDev"
+const url = "http://3.94.183.225:8086"
+const token = "1OWtE4Z0iu0_cIRNxnApUvM7iU2eK8CCouPB0BoDukVxvVloFQOPSKFON14flhQ0CSPk7FvYzhBT1NyI_5Bu1w=="
+const org = "UFPR"
 const bucket = "IoT"
 
 const wsClient = new WebSocket("ws://3.94.183.225:8999")
 const writeApi = new InfluxDB({ url, token }).getWriteApi(org, bucket, 'ns')
 
-/**
- * @type {WebSocket[]}
- */
-let connections = []
+const serialPort = new SerialPort({ path: '/dev/ttyACM0', baudRate: 115200 });
+const parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
 
-wsServer.on("connection", (conn) => {
-    console.log(new Date() + " new connection.")
-    connections.push(conn)
+serialPort.on("open", () => {
+    console.log('Arduíno conectado');
+});
 
-    conn.on("message", (message) => {
-        const data = JSON.parse(message.toString())
+parser.on('data', (data) => {
+    const splitted = data.split(" ");
 
-        if ("temp" in data) {
-            const p = new Point("Arduino")
-                .tag("weather")
-                .floatField("temperature", data.temp)
-                .timestamp(new Date())
+    const p = new Point("Arduino")
+        .tag("sensor")
+        .floatField(splitted[0], Number(splitted[1]))
+        .timestamp(new Date())
 
-            writeApi.writePoint(p)
-            writeApi.flush()
-            console.log(p.toString())
-        }
-    })
-
-    conn.on("close", () => {
-        console.log("Client disconnected.")
-        connections = connections.filter(it => it !== conn)
-    })
-})
-
-wsServer.on("listening", () => {
-    console.log("Server started")
-})
+    writeApi.writePoint(p);
+    writeApi.flush();
+    console.log(p.toLineProtocol());
+});
 
 let config = {
     lights: false,
     floor: 1
 }
 
+wsClient.on("open", () => {
+    console.log("Connected to server");
+})
+
 wsClient.on("message", (data) => {
     const object = JSON.parse(data)
 
-    if("lights" in object) {
-        connections.forEach(conn => {
-            conn.send(`lights ${object.lights ? "1" : "0"}`)
-        })
+    if ("lights" in object) {
+        serialPort.write(`lights ${object.lights ? "1" : "0"}`);
     }
 
-    if("floor" in object) {
-        connections.forEach(conn => {
-            conn.send(`floor ${object.floor}`)
-        })
+    if ("floor" in object) {
+        serialPort.write(`floor ${object.floor}`);
     }
 
     config = {
