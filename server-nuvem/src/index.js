@@ -61,6 +61,19 @@ app.get("/second-floor", (req, res) => {
     res.sendStatus(200)
 })
 
+app.get("/auto", (req, res) => {
+    const data = {
+        auto: true
+    }
+
+    const message = JSON.stringify(data)
+
+    connections.forEach(conn => conn.send(message))
+    console.log("Message broadcasted")
+
+    res.sendStatus(200)
+})
+
 const server = http.createServer(app)
 
 const wsServer = new WebSocketServer({ server })
