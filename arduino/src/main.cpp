@@ -10,6 +10,7 @@
 uint8_t pins[7] = {2, 3, 4, 5, 6, 7, 8};
 int stepper_pins[4] = {10, 12, 11, 13};
 static const uint8_t ldrPin = A5;
+static const uint8_t tempPin = A0;
 
 String command;
 unsigned long tempTimer = millis();
@@ -20,17 +21,28 @@ LiftController liftController(2, stepper_pins);
 
 bool autoLights = false;
 int lightLevel = 0;
+const int button1Pin = 30;
+const int button2Pin = 31;
+int button1State = 0;
+int button2State = 0;
 
 void setup()
 {
   pinMode(13, OUTPUT);
   pinMode(ldrPin, INPUT);
+  pinMode(tempPin, INPUT);
+  pinMode(button1Pin, INPUT);
+  pinMode(button2Pin, INPUT);
   Serial.begin(115200);
 }
 
 void sendTemperature()
 {
-  Serial.println("temperature 12.05");
+  float valor_analog_lm35 = float(analogRead(tempPin)); // Obtém o valor analógico que varia de 0 a 1023
+  float tensao = (valor_analog_lm35 * 2.5) / 1023;      // Vamos converter esse valor para tensão elétrica
+  float temperatura = tensao / 0.010;
+  Serial.print("temperature ");
+  Serial.println(temperatura);
 }
 
 void sendLights()
@@ -64,6 +76,24 @@ void loop()
   {
     sendLights();
     lightsTimer = millis();
+  }
+
+  button1State = digitalRead(button1Pin);
+
+  if (button1State == HIGH)
+  {
+    display.empty();
+    liftController.goToFloor(0);
+    display.display(1);
+  }
+
+  button2State = digitalRead(button2Pin);
+
+  if (button2State == HIGH)
+  {
+    display.empty();
+    liftController.goToFloor(1);
+    display.display(2);
   }
 
   if (Serial.available())
