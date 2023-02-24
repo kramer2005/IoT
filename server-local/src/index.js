@@ -19,22 +19,26 @@ serialPort.on("open", () => {
 });
 
 parser.on('data', (data) => {
-    if (!(data.startsWith("light") || data.startsWith("temperature"))) {
-        console.log(data)
+    try {
+        if (!(data.startsWith("light") || data.startsWith("temperature"))) {
+            console.log(data)
 
-        return
+            return
+        }
+
+        const splitted = data.split(" ");
+
+        const p = new Point("Arduino")
+            .tag("sensor")
+            .floatField(splitted[0], Number(splitted[1]))
+            .timestamp(new Date())
+
+        writeApi.writePoint(p);
+        writeApi.flush();
+        console.log(p.toLineProtocol());
+    } catch (error) {
+        console.log(error)
     }
-
-    const splitted = data.split(" ");
-
-    const p = new Point("Arduino")
-        .tag("sensor")
-        .floatField(splitted[0], Number(splitted[1]))
-        .timestamp(new Date())
-
-    writeApi.writePoint(p);
-    writeApi.flush();
-    console.log(p.toLineProtocol());
 });
 
 let config = {
